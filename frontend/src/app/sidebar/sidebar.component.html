@@ -5,11 +5,17 @@
   </div>
 
   <ul>
-    @for (item of menuItems; track $index) {
-      <li (click)="redirectToPage(item.page)" [class.active]="(page$ | async) === item.page">
-        <mat-icon aria-hidden="false">{{ item.icon }}</mat-icon>
-        <span class="menu-label">{{ item.label }}</span>
-      </li>
-    }
+    <li routerLinkActive="active">
+      <a routerLink="/dashboard"><mat-icon>dashboard</mat-icon> Dashboard</a>
+    </li>
+    <li routerLinkActive="active">
+      <a routerLink="/transferencia"><mat-icon>transfer_within_a_station</mat-icon> Transferência</a>
+    </li>
+    <li routerLinkActive="active">
+      <a routerLink="/emprestimo"><mat-icon>payments</mat-icon> Empréstimos</a>
+    </li>
+    <li routerLinkActive="active">
+      <a routerLink="/transacoes"><mat-icon>receipt_long</mat-icon> Extrato</a>
+    </li>
   </ul>
 </aside>
