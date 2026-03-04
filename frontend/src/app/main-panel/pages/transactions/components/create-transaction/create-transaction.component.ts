@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -14,8 +14,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { NgxMaskDirective } from 'ngx-mask';
+import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs';
-import { RouterService } from '../../../../../core/services/router.service';
 import { TransactionPagesEnum } from '../../constants/transaction-pages.enum';
 import { TransactionTypes } from '../../constants/transaction-types.enum';
 import { Transaction } from '../../models/transaction.model';
@@ -40,10 +40,11 @@ import { AccountStateService } from '../../../../../core/services/account-state.
 })
 export class CreateTransactionComponent implements OnInit {
   private readonly transactionsService = inject(TransactionsService);
-  private readonly routerService = inject(RouterService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly accountState = inject(AccountStateService);
 
-  @Input() id?: string;
+  id?: string;
 
   form!: FormGroup;
   originalAmount = 0;
@@ -53,6 +54,7 @@ export class CreateTransactionComponent implements OnInit {
 
   ngOnInit(): void {
     this.buildForm();
+    this.id = this.route.snapshot.paramMap.get('id') || undefined;
 
     if (this.id) {
       this.getTransactionById();
@@ -132,7 +134,7 @@ export class CreateTransactionComponent implements OnInit {
   }
 
   backToList(): void {
-    this.routerService.setTransactionPage(TransactionPagesEnum.LIST);
+    this.router.navigate(['/transacoes']);
   }
 
   dateRangeValidator(minDate: Date, maxDate: Date): ValidatorFn {
