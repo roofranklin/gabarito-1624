@@ -1,0 +1,160 @@
+.transactions-root {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+	max-width: 960px;
+	margin: 20px auto;
+}
+
+.top-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 14px;
+}
+
+.top-row h2 {
+	font-size: 1.8rem;
+	margin-bottom: 4px;
+}
+
+.action-btn {
+	border: 0;
+	border-radius: 10px;
+	padding: 11px 16px;
+	background: var(--primary);
+	color: var(--white);
+	font-weight: 600;
+}
+
+.summary-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px;
+}
+
+.summary-card {
+	padding: 18px;
+}
+
+.summary-value {
+	margin-top: 8px;
+	font-size: 2rem;
+	font-weight: 700;
+}
+
+.filter-card {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 10px;
+	align-items: center;
+}
+
+.filter-card input {
+	color: var(--white);
+	-webkit-text-fill-color: var(--white);
+	caret-color: var(--white);
+}
+
+.ghost-btn {
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	background: var(--surface-2);
+	color: var(--text);
+	padding: 11px 14px;
+	font-weight: 600;
+}
+
+.table-card {
+	overflow: hidden;
+	padding: 0;
+}
+
+table {
+	width: 100%;
+}
+
+th,
+td {
+	padding: 13px 16px;
+}
+
+.actions-col {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.table-btn {
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: transparent;
+	color: var(--text);
+	padding: 6px 10px;
+	font-size: 0.85rem;
+}
+
+.icon-btn {
+	width: 38px;
+	height: 38px;
+	padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.icon-btn mat-icon {
+	font-size: 19px;
+	width: 19px;
+	height: 19px;
+}
+
+.table-btn.edit {
+	border-color: var(--primary-45);
+	color: var(--muted-accent-1);
+}
+
+.table-btn.remove {
+	border-color: var(--danger);
+	background: var(--danger-20);
+	color: var(--danger);
+}
+
+.badge {
+	display: inline-flex;
+	border-radius: 999px;
+	padding: 4px 10px;
+	font-size: 0.75rem;
+	background: var(--primary-18);
+	color: var(--badge-text-alt);
+}
+
+.badge.income {
+	background: var(--success-16);
+	color: var(--success-text);
+}
+
+.badge.expense {
+	background: var(--danger-16);
+	color: var(--danger-text-16);
+}
+
+@media (max-width: 900px) {
+	.summary-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.filter-card {
+		grid-template-columns: 1fr;
+	}
+
+	.actions-col {
+		justify-content: flex-start;
+	}
+}
+
+@media (max-width: 600px) {
+	.table-card .col-description {
+		display: none;
+	}
+}
