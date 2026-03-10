@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { Transaction } from '../transactions/models/transaction.model';
 import { DatePipe } from '@angular/common';
@@ -11,6 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
 import { AsyncPipe } from '@angular/common';
+import { CreditCardInvoiceComponent } from './components/credit-card-invoice/credit-card-invoice.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +25,8 @@ import { AsyncPipe } from '@angular/common';
     DecimalPipe,
     MatSortModule,
     MatIconModule,
-    AsyncPipe
+    AsyncPipe,
+    CreditCardInvoiceComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
@@ -38,6 +40,18 @@ export class DashboardComponent implements OnInit {
 
   search: string = '';
   sortState: Sort = { active: 'date', direction: 'desc' };
+
+  isBalanceVisible = signal<boolean>(true);
+
+  constructor() {
+    effect(() => {
+      console.log(`Atenção: A visibilidade do saldo mudou para: ${this.isBalanceVisible()}`);
+    });
+  }
+
+  toggleBalance(): void {
+    this.isBalanceVisible.update(visible => !visible);
+  }
 
   get totalIncome(): number {
     return this.transactions
