@@ -1,0 +1,14 @@
+<div class="invoice-card" style="border: 1px solid #ccc; padding: 20px; border-radius: 8px; margin-top: 50px;">
+  <h3>Fatura do Cartão de Crédito</h3>
+  <p>Vencimento: 15/09/2026</p>
+
+  <h4>Últimas compras:</h4>
+  <ul>
+    @for (item of [1,2,3]; track item) {
+      <li>Compra {{ item }} - R$ 50,00</li>
+    } @empty {
+      <li>Nenhuma compra recente.</li>
+    }
+  </ul>
+  <button>Pagar Fatura</button>
+</div>
