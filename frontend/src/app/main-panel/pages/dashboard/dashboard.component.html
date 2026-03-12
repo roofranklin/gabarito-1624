@@ -1,47 +1,49 @@
 <div class="dashboard-root">
-  <header class="dashboard-hero">
-    <h2>Bem-vindo, {{ (account$ | async)?.name || 'Cliente' }}!</h2>
+  @if (accountData()) {
+    <header class="dashboard-hero">
+      <h2>Bem-vindo, {{ accountData()?.name || 'Cliente' }}!</h2>
 
-    <div class="hero-cards">
-      <div class="hero-card">
-        <div class="balance-section">
-          <h3>Saldo Disponível</h3>
-    
-          @if (isBalanceVisible()) {
-            <h2 class="balance-value">R$ {{ (account$ | async)?.balance | number:'1.2-2' }}</h2>
-          } @else {
-            <h2 class="balance-value">R$ ••••••••</h2>
-          }
-    
-          <button class="btn-toggle" (click)="toggleBalance()">
-            {{ isBalanceVisible() ? 'Ocultar Saldo' : 'Mostrar Saldo' }}
-          </button>
+      <div class="hero-cards">
+        <div class="hero-card">
+          <div class="balance-section">
+            <h3>Saldo Disponível</h3>
+      
+            @if (isBalanceVisible()) {
+              <h2 class="balance-value">R$ {{ accountData()?.balance | number:'1.2-2' }}</h2>
+            } @else {
+              <h2 class="balance-value">R$ ••••••••</h2>
+            }
+      
+            <button class="btn-toggle" (click)="toggleBalance()">
+              {{ isBalanceVisible() ? 'Ocultar Saldo' : 'Mostrar Saldo' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="hero-card muted-card">
+          <div class="hero-card-top">
+            <div class="muted">Receitas</div>
+            <span class="hero-meta">(mês)</span>
+          </div>
+          <div class="big text-success">
+            R$ {{ totalIncome | number:'1.2-2' }}
+            <mat-icon class="trend up" aria-hidden="true">trending_up</mat-icon>
+          </div>
+        </div>
+
+        <div class="hero-card muted-card">
+          <div class="hero-card-top">
+            <div class="muted">Despesas</div>
+            <span class="hero-meta">(mês)</span>
+          </div>
+          <div class="big text-danger">
+            -R$ {{ totalExpense | number:'1.2-2' }}
+            <mat-icon class="trend down" aria-hidden="true">trending_down</mat-icon>
+          </div>
         </div>
       </div>
-
-      <div class="hero-card muted-card">
-        <div class="hero-card-top">
-          <div class="muted">Receitas</div>
-          <span class="hero-meta">(mês)</span>
-        </div>
-        <div class="big text-success">
-          R$ {{ totalIncome | number:'1.2-2' }}
-          <mat-icon class="trend up" aria-hidden="true">trending_up</mat-icon>
-        </div>
-      </div>
-
-      <div class="hero-card muted-card">
-        <div class="hero-card-top">
-          <div class="muted">Despesas</div>
-          <span class="hero-meta">(mês)</span>
-        </div>
-        <div class="big text-danger">
-          -R$ {{ totalExpense | number:'1.2-2' }}
-          <mat-icon class="trend down" aria-hidden="true">trending_down</mat-icon>
-        </div>
-      </div>
-    </div>
-  </header>
+    </header>
+  }
 
   <section class="content card">
     <div class="content-header">
