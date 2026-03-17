@@ -1,11 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
-  AbstractControl,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -14,14 +11,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { NgxMaskDirective } from 'ngx-mask';
-import { ActivatedRoute, Router } from '@angular/router';
-import { first } from 'rxjs';
-import { TransactionPagesEnum } from '../../constants/transaction-pages.enum';
 import { TransactionTypes } from '../../constants/transaction-types.enum';
-import { Transaction } from '../../models/transaction.model';
 import { TransactionsService } from '../../services/transactions.service';
-import { DatePipe } from '@angular/common';
-import { AccountStateService } from '../../../../../core/services/account-state.service';
+import { MatDialogRef } from '@angular/material/dialog';
+import { Transaction } from '../../models/transaction.model';
 
 @Component({
   selector: 'app-create-transaction',
@@ -32,132 +25,74 @@ import { AccountStateService } from '../../../../../core/services/account-state.
     MatDatepickerModule,
     MatSelectModule,
     NgxMaskDirective,
-    DatePipe,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './create-transaction.component.html',
   styleUrl: './create-transaction.component.css',
 })
-export class CreateTransactionComponent implements OnInit {
+export class CreateTransactionComponent {
   private readonly transactionsService = inject(TransactionsService);
-  private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
-  private readonly accountState = inject(AccountStateService);
+  private readonly dialogRef = inject(MatDialogRef<CreateTransactionComponent>);
 
-  id?: string;
-
-  form!: FormGroup;
-  originalAmount = 0;
-  transactionTypesEnum = TransactionTypes;
-  todayLocale = new Date().toLocaleDateString().split('/');
-  todayISO = `${this.todayLocale[2]}-${this.todayLocale[1]}-${this.todayLocale[0]}`;
-
-  ngOnInit(): void {
-    this.buildForm();
-    this.id = this.route.snapshot.paramMap.get('id') || undefined;
-
-    if (this.id) {
-      this.getTransactionById();
-    }
-  }
-
-  buildForm(): void {
-    this.form = new FormGroup({
-      date: new FormControl(this.todayISO, [
-        Validators.required,
-        this.dateRangeValidator(new Date(2026, 0, 1), new Date()),
-      ]),
-      description: new FormControl(null, [
+  transactionForm = new FormGroup({
+    date: new FormControl(new Date().toISOString().split('T')[0], {
+      validators: [Validators.required],
+      nonNullable: true,
+    }),
+    description: new FormControl('', {
+      validators: [
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(100),
-      ]),
-      amount: new FormControl(null, Validators.required),
-      type: new FormControl(null, Validators.required),
-    });
-  }
+      ],
+      nonNullable: true,
+    }),
+    amount: new FormControl(0, {
+      validators: [Validators.required],
+      nonNullable: true,
+    }),
+    type: new FormControl<TransactionTypes | null>(null, {
+      validators: [Validators.required],
+    }),
+  });
+  transactionTypesEnum = TransactionTypes;
 
-  getTransactionById(): void {
-    this.transactionsService
-      .getTransactionById(this.id!)
-      .pipe(first())
-      .subscribe({
-        next: (transaction: Transaction) => {
-          this.originalAmount = Number(transaction.amount) || 0;
-          this.form.patchValue({
-            ...transaction,
-            amount: Math.abs(Number(transaction.amount)),
-          });
-        },
-        error: () => {},
-      });
-  }
+  isLoading = signal(false);
+  errorMessage = signal<string | null>(null);
 
-  onSubmit(): void {
-    const payload: Transaction = this.form.getRawValue();
-    const normalizedAmount = Math.abs(Number(payload.amount));
-    payload.amount =
-      payload.type === TransactionTypes.EXPENSE
-        ? -normalizedAmount
-        : normalizedAmount;
+  onSubmit() {
+    if (this.transactionForm.valid) {
+      this.isLoading.set(true);
+      this.errorMessage.set(null); // Limpa erros anteriores
 
-    if (this.id) {
-      this.updateTransaction(payload);
-      return;
-    }
+      const formValue = this.transactionForm.getRawValue();
+      const payload: Omit<Transaction, 'id'> = {
+        ...formValue,
+        amount:
+          formValue.type === TransactionTypes.EXPENSE
+            ? -Math.abs(formValue.amount)
+            : Math.abs(formValue.amount),
+        type: formValue.type!,
+      };
 
-    this.saveTransaction(payload);
-  }
-
-  saveTransaction(payload: Transaction): void {
-    this.accountState
-      .createTransactionWithBalance(payload)
-      .pipe(first())
-      .subscribe({
-        next: () => {
-          this.backToList();
-        },
-        error: () => {},
-      });
-  }
-
-  updateTransaction(payload: Transaction): void {
-    this.accountState
-      .updateTransactionWithBalance(payload, this.id!, this.originalAmount)
-      .pipe(first())
-      .subscribe({
-        next: () => {
-          this.backToList();
-        },
-        error: () => {},
-      });
-  }
-
-  backToList(): void {
-    this.router.navigate(['/transacoes']);
-  }
-
-  dateRangeValidator(minDate: Date, maxDate: Date): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      if (!control.value) return null;
-
-      const value = new Date(control.value);
-
-      if (isNaN(value.getTime())) {
-        return { invalidDate: true };
-      }
-
-      if (value <= minDate || value >= maxDate) {
-        return {
-          dateOutOfRange: {
-            min: minDate,
-            max: maxDate,
-            actual: value,
+      this.transactionsService
+        .createTransaction(payload)
+        .subscribe({
+          next: () => {
+            alert('Transação criada com sucesso!'); // Feedback simples
+            this.transactionForm.reset();
+            this.dialogRef.close(true); // Fecha o modal e avisa que deu certo
           },
-        };
-      }
-
-      return null;
-    };
+          error: (err) => {
+            console.error(err);
+            this.errorMessage.set(
+              'Falha ao conectar com o servidor. Tente novamente.'
+            );
+          },
+          complete: () => {
+            this.isLoading.set(false); // Para o spinner independente de sucesso/erro
+          },
+        });
+    }
   }
 }

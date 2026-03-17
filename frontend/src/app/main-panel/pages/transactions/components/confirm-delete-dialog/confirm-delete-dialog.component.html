@@ -1,9 +1,25 @@
 <h2 mat-dialog-title>Confirmar exclusão</h2>
 <mat-dialog-content>
-    Tem certeza que deseja excluir a transação
-    <strong>{{ data.description }}</strong>?
+  Tem certeza que deseja excluir a transação
+  <strong>{{ data.description }}</strong>?
+
+  @if(errorMessage()){
+  <div class="alert alert-danger">
+    {{ errorMessage() }}
+  </div>
+  }
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-    <button mat-button type="button" (click)="close(false)">Cancelar</button>
-    <button mat-flat-button class="delete-btn" type="button" (click)="close(true)">Excluir</button>
+  <button mat-button type="button" (click)="close()" [disabled]="isLoading()">
+    Cancelar
+  </button>
+  <button
+    mat-flat-button
+    class="delete-btn"
+    type="button"
+    (click)="confirmDelete()"
+    [disabled]="isLoading()"
+  >
+    @if(isLoading()){ Excluindo... } @else { Excluir }
+  </button>
 </mat-dialog-actions>
