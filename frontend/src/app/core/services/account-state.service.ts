@@ -25,6 +25,10 @@ export class AccountStateService {
     this.transactionsService.getTransactions().subscribe((tx) => this.transactionsSubject.next(tx));
   }
 
+  refreshAccount(): void {
+    this.dashboardService.getAccount().subscribe((acc) => this.accountSubject.next(acc));
+  }
+
   refreshTransactions(): Observable<void> {
     return this.transactionsService.getTransactions().pipe(
       tap((tx) => this.transactionsSubject.next(tx)),
@@ -38,9 +42,10 @@ export class AccountStateService {
 
     const updatedBalance = Number((acc.balance + delta).toFixed(2));
 
-    return this.dashboardService.updateAccount({ balance: updatedBalance }).pipe(
-      tap((updatedAccount) => {
-        this.accountSubject.next({ ...acc, ...updatedAccount, balance: updatedBalance });
+    return this.dashboardService.updateBalance(updatedBalance).pipe(
+      tap(() => {
+        // Após a atualização, buscamos a conta novamente para garantir consistência
+        this.refreshAccount();
       }),
       map(() => void 0),
     );
@@ -90,8 +95,10 @@ export class AccountStateService {
     };
 
     return this.transactionsService.createTransaction(tx).pipe(
-      switchMap(() => this.applyBalanceDelta(-amount)),
+      // A lógica de applyBalanceDelta já cuida da atualização do saldo e do refresh
+      switchMap(() => this.applyBalanceDelta(transferAmount)),
       tap(() => {
+        // Apenas para otimismo, atualizamos a lista localmente antes do refresh
         this.transactionsSubject.next([tx, ...this.transactionsSubject.getValue()]);
       })
     );

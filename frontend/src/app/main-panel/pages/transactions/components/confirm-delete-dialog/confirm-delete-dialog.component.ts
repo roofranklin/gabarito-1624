@@ -5,11 +5,12 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { TransactionsService } from '../../services/transactions.service';
+import { AccountStateService } from '../../../../../core/services/account-state.service';
 
 interface ConfirmDeleteDialogData {
   description: string;
   id: string;
+  amount: number;
 }
 
 @Component({
@@ -23,7 +24,7 @@ export class ConfirmDeleteDialogComponent {
   private readonly dialogRef = inject(
     MatDialogRef<ConfirmDeleteDialogComponent, boolean>
   );
-  private readonly transactionsService = inject(TransactionsService);
+  private readonly accountState = inject(AccountStateService);
   readonly data = inject<ConfirmDeleteDialogData>(MAT_DIALOG_DATA);
 
   isLoading = signal(false);
@@ -33,7 +34,7 @@ export class ConfirmDeleteDialogComponent {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    this.transactionsService.deleteTransaction(this.data.id).subscribe({
+    this.accountState.deleteTransactionWithBalance(this.data.id, this.data.amount).subscribe({
       next: () => {
         this.dialogRef.close(true);
       },
