@@ -1,9 +1,15 @@
-import { Component, inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { Component, inject, signal } from '@angular/core';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { TransactionsService } from '../../services/transactions.service';
 
 interface ConfirmDeleteDialogData {
   description: string;
+  id: string;
 }
 
 @Component({
@@ -12,14 +18,36 @@ interface ConfirmDeleteDialogData {
   imports: [MatDialogModule, MatButtonModule],
   templateUrl: './confirm-delete-dialog.component.html',
   styleUrl: './confirm-delete-dialog.component.css',
-
-  
 })
 export class ConfirmDeleteDialogComponent {
-  private readonly dialogRef = inject(MatDialogRef<ConfirmDeleteDialogComponent, boolean>);
+  private readonly dialogRef = inject(
+    MatDialogRef<ConfirmDeleteDialogComponent, boolean>
+  );
+  private readonly transactionsService = inject(TransactionsService);
   readonly data = inject<ConfirmDeleteDialogData>(MAT_DIALOG_DATA);
 
-  close(confirmed: boolean): void {
-    this.dialogRef.close(confirmed);
+  isLoading = signal(false);
+  errorMessage = signal<string | null>(null);
+
+  confirmDelete(): void {
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    this.transactionsService.deleteTransaction(this.data.id).subscribe({
+      next: () => {
+        this.dialogRef.close(true);
+      },
+      error: (err) => {
+        console.error(err);
+        this.errorMessage.set(
+          'Falha ao conectar com o servidor. Tente novamente.'
+        );
+        this.isLoading.set(false);
+      },
+    });
+  }
+
+  close(): void {
+    this.dialogRef.close(false);
   }
 }
