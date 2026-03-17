@@ -39,7 +39,6 @@ export class ListTransactionsComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly accountState = inject(AccountStateService);
   private readonly dialog = inject(MatDialog);
-  private transactionsService = inject(TransactionsService);
 
   @Output() editEmitter = new EventEmitter<string>();
 
@@ -87,10 +86,12 @@ export class ListTransactionsComponent implements OnInit {
   }
 
   loadTransactions() {
-    this.transactionsService.getTransactions().subscribe({
-      next: (data) => this.transactions.set(data),
-      error: (err) => console.error('Erro ao buscar', err),
-    });
+    this.accountState.transactions$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => this.transactions.set(data),
+        error: (err) => console.error('Erro ao buscar transações', err),
+      });
   }
 
   openCreateTransactionDialog(): void {
@@ -102,7 +103,7 @@ export class ListTransactionsComponent implements OnInit {
       .pipe(first())
       .subscribe((result) => {
         if (result) {
-          this.loadTransactions();
+          // A lista já será atualizada pelo AccountStateService
         }
       });
   }
@@ -125,13 +126,14 @@ export class ListTransactionsComponent implements OnInit {
         data: {
           description: transactionToDelete.description,
           id: transactionToDelete.id,
+          amount: transactionToDelete.amount,
         },
       })
       .afterClosed()
       .pipe(first())
       .subscribe((confirmed) => {
         if (confirmed) {
-          this.loadTransactions();
+          // O estado será atualizado pelo AccountStateService
         }
       });
   }

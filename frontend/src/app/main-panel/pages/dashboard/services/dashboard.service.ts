@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Account } from '../models/account.model';
 
@@ -34,13 +34,33 @@ export class DashboardService {
   }
 
   updateAccount(account: Partial<Account>): Observable<Account> {
+    // Para o json-server, precisamos mirar no objeto aninhado "item"
+    const payload = { item: account };
+
     return this.http
-      .patch<Account | { item?: Account }>(`${this.apiUrl}/account`, account)
+      .patch<Account | { item?: Account }>(`${this.apiUrl}/account`, payload)
       .pipe(
         catchError(() =>
+          // Fallback para /account/item se a estrutura for diferente
           this.http.patch<Account | { item?: Account }>(`${this.apiUrl}/account/item`, account),
         ),
       )
       .pipe(map((updated) => this.normalizeAccount(updated)));
+  }
+
+  updateBalance(newBalance: number): Observable<Account> {
+    // Garantimos que tanto o balance principal quanto o aninhado sejam atualizados.
+    const payload = {
+      balance: newBalance,
+      item: { balance: newBalance },
+    };
+    return this.http
+      .patch<Account>(`${this.apiUrl}/account`, payload)
+      .pipe(
+        catchError((err) => {
+          console.error(err);
+          return throwError(() => new Error('Erro ao atualizar saldo'));
+        })
+      );
   }
 }

@@ -12,9 +12,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { NgxMaskDirective } from 'ngx-mask';
 import { TransactionTypes } from '../../constants/transaction-types.enum';
-import { TransactionsService } from '../../services/transactions.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Transaction } from '../../models/transaction.model';
+import { AccountStateService } from '../../../../../core/services/account-state.service';
 
 @Component({
   selector: 'app-create-transaction',
@@ -31,7 +31,7 @@ import { Transaction } from '../../models/transaction.model';
   styleUrl: './create-transaction.component.css',
 })
 export class CreateTransactionComponent {
-  private readonly transactionsService = inject(TransactionsService);
+  private readonly accountState = inject(AccountStateService);
   private readonly dialogRef = inject(MatDialogRef<CreateTransactionComponent>);
 
   transactionForm = new FormGroup({
@@ -66,17 +66,20 @@ export class CreateTransactionComponent {
       this.errorMessage.set(null); // Limpa erros anteriores
 
       const formValue = this.transactionForm.getRawValue();
-      const payload: Omit<Transaction, 'id'> = {
+      // O método do state service espera um ID, mas o json-server vai criar um.
+      // O tipo no método do serviço está um pouco enganoso.
+      // Podemos passar um objeto que satisfaça a chamada interna ao transactionsService.
+      const payload = {
         ...formValue,
         amount:
           formValue.type === TransactionTypes.EXPENSE
             ? -Math.abs(formValue.amount)
             : Math.abs(formValue.amount),
         type: formValue.type!,
-      };
+      } as Transaction; // Cast para satisfazer o tipo, mesmo sem ID.
 
-      this.transactionsService
-        .createTransaction(payload)
+      this.accountState
+        .createTransactionWithBalance(payload)
         .subscribe({
           next: () => {
             alert('Transação criada com sucesso!'); // Feedback simples
