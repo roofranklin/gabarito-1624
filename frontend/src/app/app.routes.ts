@@ -8,7 +8,7 @@ import { CreateTransactionComponent } from "./main-panel/pages/transactions/comp
 import { ProfileComponent } from "./main-panel/pages/profile/profile.component";
 import { PersonalDataComponent } from "./main-panel/pages/profile/pages/personal-data/personal-data.component";
 import { SecuritySettingsComponent } from "./main-panel/pages/profile/pages/security-settings/security-settings.component";
-import { LoginComponent } from "./pages/login/login.component";
+import { LoginComponent } from "./main-panel/pages/login/login.component";
 import { authGuard } from "./core/guards/auth.guard";
 import { MainPanelComponent } from "./main-panel/main-panel.component";
 
