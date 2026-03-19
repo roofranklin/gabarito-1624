@@ -1,11 +1,9 @@
 {
   "account": {
     "item": {
-      "id": 1,
-      "name": "Cliente Especial",
-      "balance": 4838.5
+      "balance": 4638.5
     },
-    "balance": 3838.5
+    "balance": 4638.5
   },
   "transactions": [
     {
@@ -160,6 +158,13 @@
       "date": "2026-03-17T03:00:00.000Z",
       "description": "Teste",
       "amount": -1000,
+      "type": "expense"
+    },
+    {
+      "id": "1773951538272",
+      "date": "2026-03-19T20:18:58.272Z",
+      "description": "Transferência para Conta Corrente 0012 - ",
+      "amount": -200,
       "type": "expense"
     }
   ],

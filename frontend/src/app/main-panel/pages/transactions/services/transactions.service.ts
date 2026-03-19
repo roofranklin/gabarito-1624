@@ -23,14 +23,7 @@ export class TransactionsService {
   createTransaction(
     transaction: Omit<Transaction, 'id'>
   ): Observable<Transaction> {
-    // Criando Headers
-    const headers = new HttpHeaders({
-      Authorization: 'Bearer token-secreto-banco-123',
-      'Content-Type': 'application/json',
-    });
-
-    // POST precisa da URL, do Corpo (transaction) e das Opções (headers)
-    return this.http.post<Transaction>(this.apiUrl, transaction, { headers });
+    return this.http.post<Transaction>(this.apiUrl, transaction);
   }
 
   updateTransaction(transaction: Transaction, id: string): Observable<void> {
