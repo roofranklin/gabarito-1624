@@ -1,0 +1,36 @@
+import { Injectable, signal } from '@angular/core';
+import { Router } from '@angular/router';
+
+@Injectable({ providedIn: 'root' })
+export class AuthService {
+  // Signal para a interface saber se está logado
+  isAuthenticated = signal<boolean>(this.hasToken());
+
+  constructor(private router: Router) {}
+
+  login(email: string, password: string): boolean {
+    // Simulação estúpida para fins didáticos (na vida real chamaríamos a API)
+    if (email === 'admin@banco.com' && password === '123456') {
+      const fakeJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.falso-payload.falsa-assinatura';
+      localStorage.setItem('token', fakeJwt);
+      this.isAuthenticated.set(true);
+      this.router.navigate(['/dashboard']);
+      return true;
+    }
+    return false;
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    this.isAuthenticated.set(false);
+    this.router.navigate(['/login']);
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
+  private hasToken(): boolean {
+    return !!localStorage.getItem('token');
+  }
+}
