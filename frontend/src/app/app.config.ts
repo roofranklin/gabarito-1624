@@ -1,3 +1,4 @@
+import { importProvidersFrom } from '@angular/core';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
@@ -6,6 +7,8 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { provideEnvironmentNgxMask } from 'ngx-mask';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,5 +20,9 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideEnvironmentNgxMask(),
     { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
+    importProvidersFrom(
+      TranslateModule.forRoot()
+    ),
+    ...provideTranslateHttpLoader({ prefix: './i18n/', suffix: '.json' }),
   ],
 };
