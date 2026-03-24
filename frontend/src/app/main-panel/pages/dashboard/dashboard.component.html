@@ -6,7 +6,7 @@
       <div class="hero-cards">
         <div class="hero-card">
           <div class="balance-section">
-            <h3>Saldo Disponível</h3>
+            <h3>{{ 'DASHBOARD.SALDO_DISPONIVEL' | translate }}</h3>
       
             @if (isBalanceVisible()) {
               <h2 class="balance-value">R$ {{ accountData()?.balance | number:'1.2-2' }}</h2>
@@ -47,7 +47,7 @@
 
   <section class="content card">
     <div class="content-header">
-      <h3>Últimas Transações</h3>
+      <h3>{{ 'DASHBOARD.ULTIMAS_TRANSACOES' | translate }}</h3>
       <div class="muted summary-text">Resumo das movimentações recentes</div>
     </div>
 
