@@ -4,5 +4,12 @@
     "TRANSFER": "Transferências",
     "LOAN": "Créditos",
     "TRANSACTIONS": "Movimentos"
+  },
+  "DASHBOARD": {
+    "SALDO_DISPONIVEL": "Saldo Contabilístico",
+    "VALOR_EMPRESTIMO": "Valor de crédito",
+    "FATURA_CARTAO": "Fatura do Cartão",
+    "VER_FATURAS": "Ver faturas",
+    "ULTIMAS_TRANSACOES": "Últimos Movimentos"
   }
 }
