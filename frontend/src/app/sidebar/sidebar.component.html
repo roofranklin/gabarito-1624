@@ -6,16 +6,16 @@
 
   <ul>
     <li routerLinkActive="active">
-      <a routerLink="/dashboard"><mat-icon>dashboard</mat-icon> Dashboard</a>
+      <a routerLink="/dashboard"><mat-icon>dashboard</mat-icon> {{ 'SIDEBAR.DASHBOARD' | translate }}</a>
     </li>
     <li routerLinkActive="active">
-      <a routerLink="/transferencia"><mat-icon>transfer_within_a_station</mat-icon> Transferência</a>
+      <a routerLink="/transferencia"><mat-icon>transfer_within_a_station</mat-icon> {{ 'SIDEBAR.TRANSFER' | translate }}</a>
     </li>
     <li routerLinkActive="active">
-      <a routerLink="/emprestimo"><mat-icon>payments</mat-icon> Empréstimos</a>
+      <a routerLink="/emprestimo"><mat-icon>payments</mat-icon> {{ 'SIDEBAR.LOAN' | translate }}</a>
     </li>
     <li routerLinkActive="active">
-      <a routerLink="/transacoes"><mat-icon>receipt_long</mat-icon> Extrato</a>
+      <a routerLink="/transacoes"><mat-icon>receipt_long</mat-icon> {{ 'SIDEBAR.TRANSACTIONS' | translate }}</a>
     </li>
     <li routerLinkActive="active">
       <a routerLink="/perfil"><mat-icon>person</mat-icon> Perfil</a>
